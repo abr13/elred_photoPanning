@@ -1,9 +1,9 @@
 # Flutter Photo Editing App
 
 ## Screenshots
-<img src="screenshots/img.png" height="500"/>   <img src="screenshots/img_1.png"height="500"/>
+<img src="screenshots/img.png" height="500"/>       <img src="screenshots/img_1.png"height="500"/>
 
-<img src="screenshots/img_2.png" height="500"/>   <img src="screenshots/img_3.png" height="500"/>
+<img src="screenshots/img_2.png" height="500"/>     <img src="screenshots/img_3.png" height="500"/>
 
 ## Description
 
