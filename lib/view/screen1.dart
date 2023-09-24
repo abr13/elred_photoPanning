@@ -90,9 +90,12 @@ class _ChangeDesignScreenState extends State<ChangeDesignScreen> {
                       ),
                     ],
                   ),
-                  Image.asset(
-                    "assets/stars.png",
-                    height: 15,
+                  Transform.rotate(
+                    angle: 45,
+                    child: Image.asset(
+                      "assets/stars.png",
+                      height: 15,
+                    ),
                   ),
                 ],
               ),

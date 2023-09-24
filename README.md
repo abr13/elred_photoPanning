@@ -1,5 +1,10 @@
 # Flutter Photo Editing App
 
+## Screenshots
+<img src="screenshots/img.png" height="500"/>   <img src="screenshots/img_1.png"height="500"/>
+
+<img src="screenshots/img_2.png" height="500"/>   <img src="screenshots/img_3.png" height="500"/>
+
 ## Description
 
 This is a Flutter mobile application that allows users to edit and customize photos. Users can upload images, adjust their positions, scales, and perform basic photo editing tasks. The application includes features such as:
