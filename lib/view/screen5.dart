@@ -107,10 +107,8 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     }
   }
 
-  void uploadImage() async {
-    context.loaderOverlay.show();
+  uploadImage() async {
     var res = await uploadToServer(File(widget.imageData));
-    context.loaderOverlay.hide();
 
     if (res != null) {
       if (res.success!) {
@@ -248,7 +246,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
             ),
             const SizedBox(height: 20),
             CustomButton(
-              onTap: () {
+              onTap: () async {
                 final customizedImage = photoViewController.value;
 
                 GlobalHandler.setPhotoPosition(customizedImage.position);
@@ -258,7 +256,9 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
 
                 if (isNewImagePicked) {
                   // Call uploadImage only if a new image is picked
-                  uploadImage();
+                  context.loaderOverlay.show();
+                  await uploadImage();
+                  context.loaderOverlay.hide();
                 }
               },
               buttonText: "Save",

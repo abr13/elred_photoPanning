@@ -16,7 +16,6 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final buttonColor = isOutlined ? redColor : whiteColor;
     final buttonTextStyle = TextStyle(
       color: isOutlined ? redColor : whiteColor,
       fontSize: 20.0,
