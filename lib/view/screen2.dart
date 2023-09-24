@@ -21,8 +21,10 @@ class ImagePreviewScreen extends StatefulWidget {
 }
 
 class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
-  uploadImage() async {
+  void uploadImage() async {
+    context.loaderOverlay.show();
     var res = await uploadToServer(File(widget.imagePath));
+    context.loaderOverlay.hide();
 
     if (res != null) {
       if (res.success!) {
@@ -74,9 +76,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
             const SizedBox(height: 50),
             CustomButton(
               onTap: () async {
-                context.loaderOverlay.show();
-                await uploadImage();
-                context.loaderOverlay.hide();
+                uploadImage();
               },
               buttonText: "Save & Continue",
               isOutlined: false,

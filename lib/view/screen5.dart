@@ -107,8 +107,13 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
     }
   }
 
-  uploadImage() async {
+  uploadImage(BuildContext context) async {
+    if (context.loaderOverlay.visible) {
+      context.loaderOverlay.hide();
+    }
+    context.loaderOverlay.show();
     var res = await uploadToServer(File(widget.imageData));
+    context.loaderOverlay.hide();
 
     if (res != null) {
       if (res.success!) {
@@ -256,9 +261,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
 
                 if (isNewImagePicked) {
                   // Call uploadImage only if a new image is picked
-                  context.loaderOverlay.show();
-                  await uploadImage();
-                  context.loaderOverlay.hide();
+                  await uploadImage(context);
                 }
               },
               buttonText: "Save",
