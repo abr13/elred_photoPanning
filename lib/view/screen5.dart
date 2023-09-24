@@ -108,12 +108,7 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
   }
 
   uploadImage(BuildContext context) async {
-    if (context.loaderOverlay.visible) {
-      context.loaderOverlay.hide();
-    }
-    context.loaderOverlay.show();
     var res = await uploadToServer(File(widget.imageData));
-    context.loaderOverlay.hide();
 
     if (res != null) {
       if (res.success!) {
