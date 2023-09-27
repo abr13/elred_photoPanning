@@ -1,46 +1,38 @@
 import 'dart:io';
 
-import 'package:elred/global/global_handler.dart';
-import 'package:elred/query/post_card_api.dart';
-import 'package:elred/view/screen3.dart';
+import 'package:elred/view_model/image_preview_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:provider/provider.dart';
 
 import '../global/global_const.dart';
+import '../global/global_handler.dart';
 import '../widget/custom_appbar.dart';
 import '../widget/custom_button.dart';
+import 'screen3.dart';
 
-class ImagePreviewScreen extends StatefulWidget {
+class ImagePreviewScreen extends StatelessWidget {
   final String imagePath;
 
   const ImagePreviewScreen({Key? key, required this.imagePath})
       : super(key: key);
 
   @override
-  _ImagePreviewScreenState createState() => _ImagePreviewScreenState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider<ImagePreviewViewModel>(
+      create: (context) => ImagePreviewViewModel(),
+      child: _ImagePreviewScreenContent(imagePath: imagePath),
+    );
+  }
 }
 
-class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
-  void uploadImage() async {
-    context.loaderOverlay.show();
-    var res = await uploadToServer(File(widget.imagePath));
-    context.loaderOverlay.hide();
+class _ImagePreviewScreenContent extends StatelessWidget {
+  final String imagePath;
 
-    if (res != null) {
-      if (res.success!) {
-        GlobalHandler.showSnackbar(context, res.message!, false);
-        GlobalHandler.navigatorPush(
-          context,
-          const CardViewScreen(),
-        );
-      } else {
-        GlobalHandler.showSnackbar(context, res.message!, true);
-      }
-    } else {
-      GlobalHandler.showSnackbar(
-          context, 'An error occurred during file upload.', true);
-    }
-  }
+  const _ImagePreviewScreenContent({
+    Key? key,
+    required this.imagePath,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +53,7 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(15.0),
                   child: Image.file(
-                    File(widget.imagePath),
+                    File(imagePath),
                     width: double.infinity,
                     height: double.infinity,
                     fit: BoxFit.cover,
@@ -76,7 +68,26 @@ class _ImagePreviewScreenState extends State<ImagePreviewScreen> {
             const SizedBox(height: 50),
             CustomButton(
               onTap: () async {
-                uploadImage();
+                context.loaderOverlay.show();
+                final viewModel =
+                    Provider.of<ImagePreviewViewModel>(context, listen: false);
+                final res = await viewModel.uploadImage(File(imagePath));
+                context.loaderOverlay.hide();
+
+                if (res != null) {
+                  if (res.success!) {
+                    GlobalHandler.showSnackbar(context, res.message!, false);
+                    GlobalHandler.navigatorPush(
+                      context,
+                      const CardViewScreen(),
+                    );
+                  } else {
+                    GlobalHandler.showSnackbar(context, res.message!, true);
+                  }
+                } else {
+                  GlobalHandler.showSnackbar(
+                      context, 'An error occurred during file upload.', true);
+                }
               },
               buttonText: "Save & Continue",
               isOutlined: false,

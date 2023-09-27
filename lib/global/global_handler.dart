@@ -102,7 +102,7 @@ class GlobalHandler {
   }
 
   static void navigatorPushReplacement(BuildContext context, Widget child) {
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    Navigator.of(context).popUntil((route) => route.isCurrent);
     Navigator.pushReplacement(context, MaterialPageRoute(
       builder: (context) {
         return child;

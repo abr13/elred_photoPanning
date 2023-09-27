@@ -1,10 +1,12 @@
 import 'package:elred/global/global_handler.dart';
 import 'package:elred/view/screen4.dart';
+import 'package:elred/view_model/card_view_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:provider/provider.dart';
 
 import '../global/global_const.dart';
-import '../query/selected_card_api.dart';
+import '../query/model/selected_card_model.dart';
 import '../widget/circular_icon_btn.dart';
 import '../widget/custom_appbar.dart';
 import '../widget/custom_button.dart';
@@ -20,15 +22,16 @@ class CardViewScreen extends StatefulWidget {
 }
 
 class _CardViewScreenState extends State<CardViewScreen> {
-  Future<SelectedCardResponse?>? _cardData;
-  late String imageDataUrl;
   PhotoViewController photoViewController = PhotoViewController();
 
   @override
   void initState() {
     super.initState();
-    _cardData =
-        postSelectedCard(context, SelectedCardParams(cardImageId: cardId));
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<CardViewViewModel>(context, listen: false)
+          .getSelectedCard(context, cardId);
+    });
   }
 
   Future<void> _loadPhotoPositionAndScale() async {
@@ -54,47 +57,24 @@ class _CardViewScreenState extends State<CardViewScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Disable app bar when loading
-          if (_isLoading())
-            const ModalBarrier(
-              dismissible: false,
-              color: Colors.transparent,
-            ),
-          // Actual content
-          FutureBuilder<SelectedCardResponse?>(
-            future: _cardData,
-            builder: (context, snapshot) {
-              if (!snapshot.hasData) {
-                // If data is not available, show loading or error state
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return _buildLoadingScreen();
-                } else if (snapshot.hasError) {
-                  // Handle error
-                  return Center(
-                    child: Text('Error: ${snapshot.error.toString()}'),
-                  );
-                } else {
-                  // Handle no data case
-                  return const Center(
-                    child: Text('No data available.'),
-                  );
-                }
-              } else {
-                final imageUrl = snapshot.data!.result![0]
-                    .customImageCardDesignInfo!.profileBannerImageURL;
-                imageDataUrl = imageUrl!;
-                _loadPhotoPositionAndScale();
-                return _buildCardView(snapshot.data!, imageUrl);
-              }
-            },
-          ),
+          Consumer<CardViewViewModel>(builder: (context, value, child) {
+            if (value.isLoading) {
+              return _buildLoadingScreen();
+            }
+            final data = value.selectedCardResponse;
+            _loadPhotoPositionAndScale();
+            return _buildCardView(
+                data!,
+                data.result![0].customImageCardDesignInfo!
+                    .profileBannerImageURL!);
+          }),
         ],
       ),
     );
   }
 
-  bool _isLoading() {
-    return _cardData == null;
+  bool _isLoading(cardData) {
+    return cardData == null;
   }
 
   Widget _buildLoadingScreen() {
@@ -105,7 +85,7 @@ class _CardViewScreenState extends State<CardViewScreen> {
 
   Widget _buildCardView(SelectedCardResponse cardData, String imageUrl) {
     return Scaffold(
-      appBar: _isLoading()
+      appBar: _isLoading(cardData)
           ? null
           : CustomAppBar(
               title: 'Artist',
@@ -130,7 +110,7 @@ class _CardViewScreenState extends State<CardViewScreen> {
                         initialScale: 1.0,
                         disableGestures: true,
                         controller: photoViewController,
-                        imageProvider: NetworkImage(imageDataUrl),
+                        imageProvider: NetworkImage(imageUrl),
                         backgroundDecoration: BoxDecoration(
                           color: whiteColor,
                           borderRadius: BorderRadius.circular(20.0),
@@ -151,10 +131,11 @@ class _CardViewScreenState extends State<CardViewScreen> {
                             height: 70,
                           ),
                           UserProfileInfo(
-                            name: "Abdur Rahman",
-                            imagePath: 'assets/profile_image.png',
-                            designation: 'Senior Software Engineer',
-                            location: 'Kolkata, India',
+                            fname: "Alexandra",
+                            lname: "Stanton",
+                            imagePath: 'assets/profile.png',
+                            designation: 'Realtor | VP design',
+                            location: 'Bangalore, India',
                           ),
                           SizedBox(height: 200),
                         ],
@@ -228,7 +209,7 @@ class _CardViewScreenState extends State<CardViewScreen> {
             CustomButton(
               onTap: () {
                 GlobalHandler.navigatorPush(
-                    context, EditCardScreen(imageDataUrl: imageDataUrl));
+                    context, EditCardScreen(imageDataUrl: imageUrl));
               },
               buttonText: "Edit Card",
               isOutlined: true,

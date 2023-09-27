@@ -53,6 +53,9 @@ class BottomSheetUtil {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
+                    const SizedBox(
+                      width: 10,
+                    ),
                     _buildOptionButton(
                       icon: Icons.camera_alt_rounded,
                       text: 'Camera',
@@ -62,6 +65,9 @@ class BottomSheetUtil {
                       icon: Icons.photo_library,
                       text: 'Gallery',
                       onPressed: onPressedGallery,
+                    ),
+                    const SizedBox(
+                      width: 10,
                     ),
                   ],
                 ),

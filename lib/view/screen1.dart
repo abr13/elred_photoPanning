@@ -17,17 +17,14 @@ class ChangeDesignScreen extends StatefulWidget {
 class _ChangeDesignScreenState extends State<ChangeDesignScreen> {
   final ImagePicker _picker = ImagePicker();
 
-  void _showOptionsBottomSheet() {
-    final currentContext = context;
-    BottomSheetUtil.showOptionsBottomSheet(currentContext,
-        onPressedCamera: () async {
+  void _showOptionsBottomSheet(context) {
+    BottomSheetUtil.showOptionsBottomSheet(context, onPressedCamera: () async {
       // Camera
       final XFile? image = await _picker.pickImage(source: ImageSource.camera);
 
       if (image != null) {
-        Navigator.pop(currentContext);
         ImageUtil.cropAndNavigateToPreviewScreen(
-          currentContext,
+          context,
           File(image.path).path,
         );
       }
@@ -36,9 +33,8 @@ class _ChangeDesignScreenState extends State<ChangeDesignScreen> {
       final XFile? photo = await _picker.pickImage(source: ImageSource.gallery);
 
       if (photo != null) {
-        Navigator.pop(currentContext);
         ImageUtil.cropAndNavigateToPreviewScreen(
-            currentContext, File(photo.path).path);
+            context, File(photo.path).path);
       }
     });
   }
@@ -59,7 +55,7 @@ class _ChangeDesignScreenState extends State<ChangeDesignScreen> {
         color: whiteColor,
         child: GestureDetector(
           onTap: () {
-            _showOptionsBottomSheet();
+            _showOptionsBottomSheet(context);
           },
           child: Container(
             height: 80,

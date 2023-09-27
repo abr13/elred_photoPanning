@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:mime/mime.dart';
 
+import 'model/post_card_model.dart';
+
 Future<ImageUploadResponse?> uploadToServer(File file) async {
   try {
     // Check file size
@@ -15,6 +17,8 @@ Future<ImageUploadResponse?> uploadToServer(File file) async {
       return ImageUploadResponse(
         success: false,
         message: 'File size exceeds 10MB.',
+        isAuth: null,
+        result: [],
       );
     }
 
@@ -29,6 +33,8 @@ Future<ImageUploadResponse?> uploadToServer(File file) async {
       return ImageUploadResponse(
         success: false,
         message: 'Invalid or unsupported file type.',
+        isAuth: null,
+        result: [],
       );
     }
 
@@ -60,57 +66,8 @@ Future<ImageUploadResponse?> uploadToServer(File file) async {
     return ImageUploadResponse(
       success: false,
       message: 'An error occurred: $e',
+      isAuth: null,
+      result: [],
     );
-  }
-}
-
-class ImageUploadResponse {
-  bool? success;
-  bool? isAuth;
-  String? message;
-  List<Result>? result;
-
-  ImageUploadResponse({this.success, this.isAuth, this.message, this.result});
-
-  ImageUploadResponse.fromJson(Map<String, dynamic> json) {
-    success = json['success'];
-    isAuth = json['isAuth'];
-    message = json['message'];
-    if (json['result'] != null) {
-      result = <Result>[];
-      json['result'].forEach((v) {
-        result!.add(new Result.fromJson(v));
-      });
-    }
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['success'] = this.success;
-    data['isAuth'] = this.isAuth;
-    data['message'] = this.message;
-    if (this.result != null) {
-      data['result'] = this.result!.map((v) => v.toJson()).toList();
-    }
-    return data;
-  }
-}
-
-class Result {
-  String? uid;
-  String? profileBannerImageURL;
-
-  Result({this.uid, this.profileBannerImageURL});
-
-  Result.fromJson(Map<String, dynamic> json) {
-    uid = json['uid'];
-    profileBannerImageURL = json['profileBannerImageURL'];
-  }
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['uid'] = this.uid;
-    data['profileBannerImageURL'] = this.profileBannerImageURL;
-    return data;
   }
 }

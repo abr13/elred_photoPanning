@@ -13,9 +13,9 @@ class CircularIconButton extends StatelessWidget {
     Key? key,
     required this.iconData,
     required this.onPressed,
-    this.width = 40, // Default width
-    this.height = 40, // Default height
-    this.iconSize = 24, // Default icon size
+    this.width = 40,
+    this.height = 40,
+    this.iconSize = 24,
   }) : super(key: key);
 
   @override
@@ -23,13 +23,10 @@ class CircularIconButton extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(5),
       width: width,
-      // Use the provided width
       height: height,
-      // Use the provided height
       decoration: BoxDecoration(
-        color: greyColor.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(
-            iconSize / 2), // Calculate radius based on width
+        color: greyColor.shade700.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(iconSize / 2),
       ),
       child: IconButton(
         icon: Icon(

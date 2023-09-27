@@ -6,7 +6,7 @@ import '../view/screen2.dart';
 
 class ImageUtil {
   static Future<void> cropAndNavigateToPreviewScreen(
-      BuildContext context, String imagePath) async {
+      context, String imagePath) async {
     CroppedFile? croppedFile = await ImageCropper().cropImage(
       sourcePath: imagePath,
       aspectRatioPresets: [

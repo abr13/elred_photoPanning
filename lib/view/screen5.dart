@@ -7,10 +7,12 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:photo_view/photo_view.dart';
+import 'package:provider/provider.dart';
 
 import '../global/global_const.dart';
-import '../query/post_card_api.dart';
 import '../util/bottom_sheet.dart';
+import '../view_model/card_view_view_model.dart';
+import '../view_model/image_preview_view_model.dart';
 import '../widget/custom_button.dart';
 import '../widget/user_profile.dart';
 
@@ -33,6 +35,11 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<CardViewViewModel>(context, listen: false)
+          .getSelectedCard(context, cardId);
+    });
 
     _currentImageProvider = NetworkImage(widget.imageData);
     _loadPhotoPositionAndScale();
@@ -104,24 +111,6 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
         rotationFocusPoint: null,
       );
       photoViewController.value = position;
-    }
-  }
-
-  uploadImage(BuildContext context) async {
-    var res = await uploadToServer(File(widget.imageData));
-
-    if (res != null) {
-      if (res.success!) {
-        GlobalHandler.showSnackbar(context, res.message!, false);
-        setState(() {
-          newUploadedImage = res.result![0].profileBannerImageURL!;
-        });
-      } else {
-        GlobalHandler.showSnackbar(context, res.message!, true);
-      }
-    } else {
-      GlobalHandler.showSnackbar(
-          context, 'An error occurred during file upload.', true);
     }
   }
 
@@ -232,10 +221,12 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
                             height: 65,
                           ),
                           UserProfileInfo(
-                            name: "Abdur Rahman",
-                            imagePath: 'assets/profile_image.png',
-                            designation: 'Senior Software Engineer',
-                            location: 'Kolkata, India',
+                            fname: "Alexandra",
+                            lname: "Stanton",
+                            imagePath: 'assets/profile_avatar.png',
+                            designation: 'Realtor | VP design',
+                            location: 'Bangalore, India',
+                            editable: false,
                           ),
                         ],
                       ),
@@ -256,7 +247,35 @@ class _CustomizationScreenState extends State<CustomizationScreen> {
 
                 if (isNewImagePicked) {
                   // Call uploadImage only if a new image is picked
-                  await uploadImage(context);
+                  context.loaderOverlay.show();
+                  final viewModel = Provider.of<ImagePreviewViewModel>(context,
+                      listen: false);
+                  final res =
+                      await viewModel.uploadImage(File(widget.imageData));
+                  context.loaderOverlay.hide();
+
+                  if (res != null) {
+                    if (res.success!) {
+                      GlobalHandler.showSnackbar(context, res.message!, false);
+                      setState(() {
+                        newUploadedImage =
+                            res.result![0].profileBannerImageURL!;
+                      });
+                    } else {
+                      GlobalHandler.showSnackbar(context, res.message!, true);
+                    }
+                  } else {
+                    GlobalHandler.showSnackbar(
+                        context, 'An error occurred during file upload.', true);
+                  }
+                } else {
+                  GlobalHandler.navigatorPushReplacement(
+                      context,
+                      EditCardScreen(
+                        imageDataUrl: isNewImagePicked
+                            ? newUploadedImage!
+                            : widget.imageData,
+                      ));
                 }
               },
               buttonText: "Save",
